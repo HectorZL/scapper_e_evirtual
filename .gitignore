@@ -1,0 +1,7 @@
+# Ignorar archivos de datos CSV
+course_data_2.csv
+course_data.csv
+
+# Ignorar archivos de credenciales
+credenciales.data
+
