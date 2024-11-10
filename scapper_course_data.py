@@ -3,11 +3,21 @@ import csv
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 import time
+import re
 
 # Cargar correo y contraseña desde archivo.data
 with open('credenciales.data', 'r') as f:
     correo_login = f.readline().strip()  # Renombrar variable para evitar conflicto
     contraseña = f.readline().strip()
+
+def get_user_data_dir():
+    username = os.getlogin()
+    possible_drives = ['C', 'D', 'E']
+    for drive in possible_drives:
+        user_data_dir = f"{drive}:\\Users\\{username}\\AppData\\Local\\Microsoft\\Edge\\User Data"
+        if os.path.exists(user_data_dir):
+            return user_data_dir
+    raise FileNotFoundError("No se encontró el directorio de datos de usuario en los discos C, D o E.")
 
 def main():
     # URL de la página de inicio de sesión
@@ -23,6 +33,9 @@ def main():
         else:
             print("La URL ingresada no tiene la sintaxis correcta. Inténtelo de nuevo.")
 
+    # Obtener el directorio de datos de usuario de manera dinámica
+    user_data_dir = get_user_data_dir()
+    
     # Crear una instancia de Playwright
     with sync_playwright() as p:
         # Lanzar el navegador Microsoft Edge en modo headless con directorio de datos de usuario
