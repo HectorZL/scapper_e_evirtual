@@ -5,11 +5,11 @@ import csv
 def scrape_course_data(page, url_curso):
     """Navega al curso y extrae los datos de los estudiantes."""
     page.goto(url_curso, wait_until="domcontentloaded")
-    time.sleep(2)
+    time.sleep(1)
     
     # Intentar mostrar 5000 estudiantes por página si es posible
     try:
-        page.click("a[data-action='showcount'][href*='rpage=5000']", timeout=30000)
+        page.click("a[data-action='showcount'][href*='rpage=5000']", timeout=20000)
     except Exception as e:
         print("No se pudo expandir la lista a 5000 estudiantes. Continuando con la lista predeterminada.")
     
@@ -23,7 +23,7 @@ def scrape_course_data(page, url_curso):
     total_estudiantes = len(enlaces_estudiantes)
     for i, enlace in enumerate(enlaces_estudiantes, start=1):
         page.goto(enlace['href'], wait_until="domcontentloaded")
-        time.sleep(2)
+        time.sleep(1)
         
         # Obtener correo electrónico
         html = page.content()
@@ -33,9 +33,14 @@ def scrape_course_data(page, url_curso):
         
         # Procesar nombre y apellidos en el formato requerido
         nombre_completo = enlace.text.strip()
+        
+        # Eliminar las dos primeras letras del nombre completo
+        nombre_completo = nombre_completo[2:]
+        
+        # Separar el nombre completo en palabras y dividir en apellidos y nombre
         partes = nombre_completo.split()
-        apellido = ' '.join(partes[:2])  # Primeros dos elementos como apellido
-        nombre = ' '.join(partes[2:])  # Resto como nombre
+        apellido = ' '.join(partes[-2:])  # Últimos dos elementos como apellido
+        nombre = ' '.join(partes[:-2])    # Resto como nombre
         nombre_formato = f"{apellido} {nombre}"
         
         # Agregar a datos
