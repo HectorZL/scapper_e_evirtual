@@ -13,8 +13,15 @@ def main():
     # URL de la página de inicio de sesión
     url_login = "https://evirtual.utm.edu.ec"
 
-    # URL de la página del curso
-    url_curso = "https://evirtual.utm.edu.ec/user/index.php?id=1234"
+    # Solicitar la URL del curso al usuario hasta que sea válida
+    regex = r"^https://evirtual\.utm\.edu\.ec/user/index\.php\?id=\d+$"
+    while True:
+        print("Por favor, ingrese la URL del curso. Ejemplo: https://evirtual.utm.edu.ec/user/index.php?id=1030")
+        url_curso = input("URL del curso: ").strip()
+        if re.match(regex, url_curso):
+            break
+        else:
+            print("La URL ingresada no tiene la sintaxis correcta. Inténtelo de nuevo.")
 
     # Crear una instancia de Playwright
     with sync_playwright() as p:
