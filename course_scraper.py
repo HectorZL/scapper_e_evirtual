@@ -7,17 +7,22 @@ def scrape_course_data(page, url_curso):
     page.goto(url_curso, wait_until="domcontentloaded")
     time.sleep(1)
     
-    # Intentar mostrar 5000 estudiantes por página si es posible
+    # Intentar hacer clic en el botón para mostrar todos los estudiantes
     try:
-        page.click("a[data-action='showcount'][href*='rpage=5000']", timeout=20000)
+        page.click("a[data-action='showcount']", timeout=20000)
+        time.sleep(2)  # Espera adicional para que la página cargue completamente
     except Exception as e:
-        print("No se pudo expandir la lista a 5000 estudiantes. Continuando con la lista predeterminada.")
-    
-    # Parsear el contenido de la página
+        print("No se pudo expandir la lista a más estudiantes. Continuando con la lista predeterminada.")
+
+    # Parsear el contenido de la página después de hacer clic en "Mostrar 40"
     html = page.content()
     soup = BeautifulSoup(html, 'html.parser')
     enlaces_estudiantes = soup.find_all('a', href=lambda x: x and 'user/view.php?id=' in x)
 
+    # Verificar si la lista contiene 40 estudiantes ahora
+    if len(enlaces_estudiantes) < 40:
+        print("Advertencia: No se cargaron los 40 estudiantes. Verifique si el botón 'Mostrar' funciona correctamente.")
+    
     # Procesar cada estudiante y guardar en CSV
     data = []
     total_estudiantes = len(enlaces_estudiantes)
